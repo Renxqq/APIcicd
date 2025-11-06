@@ -19,3 +19,9 @@ jobs:
 
     - name: Running Test Scenario
       run: apifox run --access-token ${{ secrets.APIFOX_ACCESS_TOKEN }} -t 7457717 -e 38907307 -n 1 -r html,cli
+   
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-test-report
+        path: ./apifox-reports/*.html
