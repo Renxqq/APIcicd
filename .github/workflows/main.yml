@@ -25,3 +25,35 @@ jobs:
       with:
         name: api-test-report
         path: ./apifox-reports/*.html
+        
+    # 邮件通知步骤 - 添加在Upload Test Report之后
+    - name: Send Email Notification
+      if: always()  # 无论测试成功失败都发送
+      uses: dawidd6/action-send-mail@v3
+      with:
+        # 发件人配置
+        server_address: smtp.qq.com  # 根据邮箱服务商修改
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        
+        # 邮件内容配置
+        subject: "API测试结果 - ${{ github.repository }} - ${{ job.status }}"
+        to: ${{ secrets.EMAIL_TO }}
+        from: GitHub Actions <${{ secrets.EMAIL_USERNAME }}>
+        body: |
+          API自动化测试执行完成！
+          
+          仓库: ${{ github.repository }}
+          分支: ${{ github.ref_name }}
+          提交者: ${{ github.actor }}
+          测试状态: ${{ job.status }}
+          提交信息: ${{ github.event.head_commit.message }}
+          
+          详细测试报告请查看:
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
+          代码变更详情:
+          https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+          
+          此邮件由GitHub Actions自动发送
